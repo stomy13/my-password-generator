@@ -1,5 +1,6 @@
 use clap::Parser;
-use rand::{thread_rng, Rng};
+use rand::rngs::OsRng;
+use rand::Rng;
 
 /// シンプルなパスワードジェネレーター
 #[derive(Parser, Debug)]
@@ -33,10 +34,7 @@ fn generate_password(
     use_num: bool,
     use_special: bool,
 ) -> String {
-    let mut rng = thread_rng();
-    let mut password = String::new();
     let mut charset = String::new();
-
     if use_upper {
         charset.push_str("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     }
@@ -55,11 +53,13 @@ fn generate_password(
         charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".to_string();
     }
 
-    for _ in 0..length {
-        let idx = rng.gen_range(0..charset.len());
-        password.push(charset.chars().nth(idx).unwrap());
-    }
-
+    let mut rng = OsRng;
+    let password: String = (0..length)
+        .map(|_| {
+            let idx: usize = rng.gen_range(0..charset.len());
+            charset.chars().nth(idx).unwrap()
+        })
+        .collect();
     password
 }
 
