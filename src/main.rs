@@ -11,21 +11,26 @@ struct Args {
     length: usize,
 
     /// 大文字を含める
-    #[arg(long, default_value_t = true)]
+    #[arg(long)]
     uppercase: bool,
 
     /// 小文字を含める
-    #[arg(long, default_value_t = true)]
+    #[arg(long)]
     lowercase: bool,
 
     /// 数字を含める
-    #[arg(long, default_value_t = true)]
+    #[arg(long)]
     numbers: bool,
 
     /// 特殊文字を含める
-    #[arg(long, default_value_t = true)]
+    #[arg(long)]
     special: bool,
 }
+
+const UPPERCASE: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const LOWERCASE: &str = "abcdefghijklmnopqrstuvwxyz";
+const NUMBERS: &str = "0123456789";
+const SPECIAL: &str = "!@#$%^&*()-_=+[]{}|;:,.<>?";
 
 fn generate_password(
     length: usize,
@@ -36,21 +41,21 @@ fn generate_password(
 ) -> String {
     let mut charset = String::new();
     if use_upper {
-        charset.push_str("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        charset.push_str(UPPERCASE);
     }
     if use_lower {
-        charset.push_str("abcdefghijklmnopqrstuvwxyz");
+        charset.push_str(LOWERCASE);
     }
     if use_num {
-        charset.push_str("0123456789");
+        charset.push_str(NUMBERS);
     }
     if use_special {
-        charset.push_str("!@#$%^&*()-_=+[]{}|;:,.<>?");
+        charset.push_str(SPECIAL);
     }
 
     if charset.is_empty() {
-        // 何も指定されていない場合はデフォルトで英数字
-        charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".to_string();
+        // 何も指定されていない場合はデフォルトで全文字種を含める
+        charset = format!("{}{}{}{}", UPPERCASE, LOWERCASE, NUMBERS, SPECIAL);
     }
 
     let mut rng = OsRng;
